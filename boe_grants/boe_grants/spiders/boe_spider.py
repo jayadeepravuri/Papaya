@@ -1,4 +1,5 @@
 import scrapy
+from googletrans import Translator
 
 class BoeSpider(scrapy.Spider):
     name = 'boe'
@@ -31,6 +32,16 @@ class BoeSpider(scrapy.Spider):
         regulations = get_text_or_none('//p[contains(text(), "Tercero. Bases Reguladoras.")]/following-sibling::p[1]/text()')
         deadline = get_text_or_none('//p[contains(text(), "Quinto. Plazo de Presentación de solicitudes.")]/following-sibling::p[1]/text()')
 
+        # Initialize the translator
+        translator = Translator()
+
+        # Translate the text fields
+        amount_translated = translator.translate(amount, dest='en').text if amount else None
+        beneficiaries_translated = translator.translate(beneficiaries, dest='en').text if beneficiaries else None
+        object_text_translated = translator.translate(object_text, dest='en').text if object_text else None
+        regulations_translated = translator.translate(regulations, dest='en').text if regulations else None
+        deadline_translated = translator.translate(deadline, dest='en').text if deadline else None
+
         yield {
             'identifier': identifier,
             'department': department,
@@ -43,9 +54,9 @@ class BoeSpider(scrapy.Spider):
             'announcement_number': announcement_number,
             'pdf_url': pdf_url,
             'grant_type': grant_type,
-            'amount': amount,
-            'beneficiaries': beneficiaries,
-            'object_text': object_text,
-            'regulations': regulations,
-            'deadline': deadline
+            'amount': amount_translated,
+            'beneficiaries': beneficiaries_translated,
+            'object_text': object_text_translated,
+            'regulations': regulations_translated,
+            'deadline': deadline_translated
         }
